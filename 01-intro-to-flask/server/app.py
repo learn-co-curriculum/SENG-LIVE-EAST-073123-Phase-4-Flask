@@ -11,15 +11,27 @@
 	# `Migrate` from `flask_migrate`
 	# db and `Production` from `models`
 
+from flask import Flask, jsonify, make_response
+from flask_migrate import Migrate
+from models import db, Production 
+
 # 3. ✅ Initialize the App
     # Add `app = Flask(__name__)`
+
+app = Flask(__name__) # name is for Flask to know where to look for resources #templates 
+
+#configure the flask app to connect to a database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False #as per canvas
     
     # Configure the database by adding`app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'`
     # and `app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False` 
     
     # Set the migrations with `migrate = Migrate(app, db)`
-    
+migrate = Migrate(app, db)
     # Finally, initialize the application with `db.init_app(app)`
+db.init_app(app)
+
 
  # 4. ✅ Migrate 
 	# `cd` into the `server` folder
@@ -43,12 +55,40 @@
         #  def index():
         #    return '<h1>Hello World!</h1>'`
 
+@app.route('/') # router decorator 
+def index():
+    return '<h1> Hello World!!!! </h1>'
+
+@app.route('/highest-budget-movie') #route decorator
+def get_highest_budget_movie():
+    #query for the lowest budget movie 
+    movie=Production.query.order_by(Production.budget.desc()).first()
+
+    prod = {
+        "title": movie.title,
+        "genre": movie.genre,
+        "budget": movie.budget
+    }
+    # jsonify and return the response
+    return make_response(jsonify(prod), 200)
+
 # 13. ✅ Run the server with `flask run` and verify your route in the browser at `http://localhost:5000/`
 
 # 14. ✅ Create a dynamic route
 # `@app.route('/productions/<string:title>')
 #  def production(title):
 #     return f'<h1>{title}</h1>'`
+
+@app.route('/productions/<string:title>')#route decorator
+def production(title):
+    quer = Production.query.filter_by(title=title).first()
+    production = {
+        "title": quer.title,
+        "genre": quer.genre,
+        "budget":quer.budget
+    }
+    return make_response(jsonify(production))
+
 
 
 # 15.✅ Update the route to find a `production` by its `title` and send it to our browser
@@ -79,5 +119,5 @@
 # Note: If you'd like to run the application as a script instead of using `flask run`, uncomment the line below 
 # and run `python app.py`
 
-# if __name__ == '__main__':
-#     app.run(port=5000, debug=True)
+if __name__ == '__main__':
+    app.run(port=5555, debug=True)
