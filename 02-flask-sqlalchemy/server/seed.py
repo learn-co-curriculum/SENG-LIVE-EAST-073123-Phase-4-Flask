@@ -1,23 +1,31 @@
-#!/usr/bin/env python3
-# 📚 Review With Students:
-    # Seeding 
-# 5. ✅ Imports
-    # app from app
-    # db and Production from models
 from app import app
 from models import Production, db
+from faker import Faker # adding faker
+from random import choice as rc
 
-# 6. ✅ Initialize the SQLAlchemy instance with `db.init_app(app)`
-
-
-# 7. ✅ Create application context `with app.app_context():`
-    # Info on application context: https://flask.palletsprojects.com/en/1.1.x/appcontext/
 with app.app_context():
 
-# 8.✅ Create a query to delete all existing records from Production
     Production.query.delete()
 
-# 9.✅ Create some seeds for production and commit them to the database. 
+    fake = Faker() # create and init a faker generator
+    prod_list = [] # empty list
+
+    genres = ["action", "adventure", "comedy", "drama", "fantasy"]
+
+    #add production instances to the list
+    for n in range(29):
+        prod = Production(
+            title=fake.catch_phrase(),
+            genre=rc(genres),
+            image=fake.image_url(),
+            budget=rc([100, 200, 300, 50, 25, 0]),
+            director=fake.name(),
+            ongoing=rc([True, False]),
+            description=fake.catch_phrase()
+        )
+        prod_list.append(prod)
+
+
     amsterdam = Production(
        title="amsterdam",
        genre="mystery",
@@ -39,14 +47,5 @@ with app.app_context():
     )
 
     db.session.add_all([amsterdam, nope])
+    db.session.add_all(prod_list)
     db.session.commit()
-
-# 10.✅ Run in terminal:
-    # `python seed.py`
-# 11.✅ run `flask shell` in the terminal 
-    # from app import app
-    # from models import Production
-    # Check the seeds by querying Production
-# 12.✅ Navigate back to app.py  
-    
-    
