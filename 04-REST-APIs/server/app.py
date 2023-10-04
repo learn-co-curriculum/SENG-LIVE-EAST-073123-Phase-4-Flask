@@ -1,12 +1,10 @@
 from flask import Flask, jsonify, make_response, request 
 from flask_migrate import Migrate
 from models import db, Production, Actor, Role
-
-
 from flask_restful import Api, Resource
+#importing flask_restful 
 
 app = Flask(__name__) #Initialize the App
-    
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'# Configure the database 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -17,17 +15,24 @@ migrate = Migrate(app, db)  # Set the migrations
 
 db.init_app(app) #initialize the application
 
-api = Api(app) #initialize API
+#initialize the API
+api = Api(app)
 
-class Productions(Resource): #this function name should be different from model class name that we are importing
-    #Create a route to /productions for GET requests
+# @app.route('/productions', methods= ["GET", "DELETE"])
+# def One_Production(id):
+#     if(request.method == "GET"):
+
+
+class Productions(Resource): #should be different from the model 
+
+    #GET 
     def get(self):
-
-        #Create the query
+        #create a query
         quer = Production.query.all()
 
-        #Loop through the query and convert each object into a dictionary 
+        # loop through the query and convert each obj into a dict
         prods = []
+
         for each_p in quer:
             prods.append({
                 "id": each_p.id,
@@ -36,46 +41,44 @@ class Productions(Resource): #this function name should be different from model 
                 "budget": each_p.budget
             })
 
-        #Use make_response and jsonify to return a response
+        #return a response, add a status #
         resp = make_response(jsonify(prods), 200)
- 
+
         return resp
     
-
+    #post
     def post(self):
-        #Get information from request.get_json()
         request_json = request.get_json()
-        
-        #Create new object
+
+        # create a new object 
         new_production = Production(
             title=request_json['title'],
-            genre=request_json['genre'],
-            budget=request_json['budget'],
-            image=request_json['image'],
-            director=request_json['director'],
-            description=request_json['description'],
-            ongoing=request_json['ongoing']
+            genre = request_json['genre'],
+            budget=request_json['budget']    
         )
-        #Add and commit to db
+        # add / commit to db
         db.session.add(new_production)
         db.session.commit()
 
-        #Convert to dictionary
+        #convert to dictionary 
         prod_dict = {
             "id": new_production.id,
             "title": new_production.title,
             "genre": new_production.genre,
-            "budget": new_production.budget}
+            "budget": new_production.budget
+        }
 
         #return as JSON
-        response = make_response(jsonify(prod_dict),
-            201
-        )
+        response = make_response(jsonify(prod_dict), 201)
 
         return response
-    
+
+
 api.add_resource(Productions, '/productions')
-#Test in Postman
+
+
+#POST 
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

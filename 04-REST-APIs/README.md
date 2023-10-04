@@ -6,9 +6,7 @@
 - Introduce RESTful Routing
 - Build and Execute GET / POST Requests
 - Introduce and Use Postman to Interact with APIs
-- Discuss the Importance of Serializers
-- Demonstrate How to Properly Set Up Serializers
-- Demonstrate How to Use Serializers to Render Structured Data in API Responses
+
 
 ## Lecture Topics
 - Introduction to APIs
@@ -17,21 +15,19 @@
 - RESTful Routing Conventions
 - Testing APIs with Postman
 - GET/POST
-- SQLAlchemy-Serializer
-- Serializing Relationships
-- Serializing Associations
+
 
     # API Fundamentals
     # MVC Architecture and Patterns / Best Practices
     # RESTful Routing
-    # Serialization
     # Postman
 
 https://flask-slide.netlify.app/slides/001-intro/
 
 # What is API (Application Programming Interface)?
 - a set of rules and protocols that allows different software applications to communicate with each other.
-- RESTful APIs, SOAP APIs: SOAP (Simple Object Access Protocol) uses XML, known for typing, complex operations.
+- RESTful APIs 
+- SOAP APIs: SOAP (Simple Object Access Protocol) uses XML, known for typing, complex operations.
 - Web APIs: enable web applications, mobile apps to access remote services or data.
 
 # What is RESTful API?
@@ -66,3 +62,8 @@ https://flask-slide.netlify.app/slides/001-intro/
 # | 405      	| Method not Allowed    |   
 # | 500     	|Internal Server Error  | 
 
+# MVC in Flask
+MVC (Model-View-Controller) architecture separates an application into three key components: 
+- Models interact with data sources
+- Views format the response for the client based on the HTTP request and routes
+- The Controllers act as an intermediary between the Model and View. It receives user input from the View, processes it, updates the Model, and updates the View accordingly.
