@@ -109,41 +109,6 @@ class ProductionsById(Resource):
 
 api.add_resource(ProductionsById, "/productions/<int:id>")
 
-# @app.route('/productions/actors/<int:id>')
-# def production_actors_by_id(id):
-#     production = Production.query.filter(Production.id == id).first()
-#     prod_actors = []
-#     prod_actors.append(production.title)
-
-#     for role in production.roles:
-#         # actor = role.actor
-#         # actor_dict = actor.to_dict(rules=("-roles",))
-#         # prod_actors.append(actor_dict)
-#         prod_actors.append(role.actor.to_dict(rules=("-roles",)))
-
-#     return make_response(prod_actors, 200)
-
-# @app.route('/productions/actors/<int:id>')
-# def production_actors_by_id(id):
-#     production = Production.query.filter(Production.id == id).first()
-#     prod_actors = []
-#     prod_actors.append(production.title)
-
-#     actors = [ role.actor.to_dict(rules=("-roles",))
-#               for role in production.roles]
-
-#     prod_actors.append(actors)
-#     return make_response(prod_actors, 200)
-
-@app.route('/productions/actors/<int:id>')
-def production_actors_by_id(id):
-    production = Production.query.filter(Production.id == id).first()
-
-    actors = [ actor.to_dict(rules=("-roles",))
-              for actor in production.actors]
-
-    return make_response(actors, 200)
-
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

@@ -1,22 +1,19 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy.ext.associationproxy import association_proxy
 
-#configuring a MetaData object for a database using SQLAlchemy
+
+#configuring a MetaData
 metadata = MetaData(naming_convention={
     "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
 })
 #"fk":foreign key constraints 
-# table name, column name, and referred table name.
+
 
 db = SQLAlchemy(metadata = metadata)
 
 
-class Production(db.Model, SerializerMixin):
+class Production(db.Model):
     __tablename__ = "productions"
-
-    serialize_rules = ("-roles.actor",)
 
     id = db.Column(db.Integer, primary_key=True)
 
@@ -32,17 +29,13 @@ class Production(db.Model, SerializerMixin):
     roles = db.relationship('Role', back_populates='production',cascade='all, delete-orphan')
     #back_populates attribute: bidirectional relationship  
 
-    actors = association_proxy("roles", "actor")
-
     def __repr__(self):
         return f'<Production {self.id}, {self.title}>'
 
     
 
-class Actor(db.Model, SerializerMixin):
+class Actor(db.Model):
     __tablename__="actors"
-
-    serialize_rules = ("-roles.production",)
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -55,10 +48,9 @@ class Actor(db.Model, SerializerMixin):
         return f'<Actor {self.id}, {self.name}>'
 
 
-class Role(db.Model, SerializerMixin):
+class Role(db.Model):
     __tablename__ = "roles"
 
-    serialize_rules = ("-production.roles", "-actor.roles")
 
     id = db.Column(db.Integer, primary_key=True)
 
