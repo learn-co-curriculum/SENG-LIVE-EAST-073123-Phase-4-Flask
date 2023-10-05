@@ -24,9 +24,9 @@ class Productions(Resource): #should be different from the model
     #GET 
     def get(self):
         # #create a query
-        # quer = Production.query.all()
+        quer = Production.query.all()
 
-        # # loop through the query and convert each obj into a dict
+        # loop through the query and convert each obj into a dict
         # prods = []
 
         # for each_p in quer:
@@ -40,7 +40,7 @@ class Productions(Resource): #should be different from the model
         prods = [ production.to_dict() for production in Production.query.all() ]
 
         #return a response, add a status #
-        resp = make_response(jsonify(prods), 200)
+        resp = make_response(prods, 200)
 
         return resp
     
@@ -73,17 +73,15 @@ class Productions(Resource): #should be different from the model
 
 api.add_resource(Productions, '/productions')
 
-#cRuD
+# get one 
 class ProductionsById(Resource):
-
     def get(self, id):
         #import ipdb; ipdb.set_trace()
         id_prod = Production.query.filter(Production.id == id).one_or_none()
 
-        #handle message 
-        if id_prod is None: 
-            return make_response({"error": "Production Not Found"}, 404)
-        
+        if id_prod is None:
+            return make_response({ "error " : "Production Not Found !!!!! "},404 )
+
         id_prod_dict = {
             "id": id_prod.id,
             "title": id_prod.title,
@@ -93,21 +91,45 @@ class ProductionsById(Resource):
 
         return make_response(id_prod_dict, 200)
     
+
     def delete(self, id):
         #import ipdb; ipdb.set_trace()
-        id_prod = Production.query.filter_by(id=id).one_or_none()
-        #filtering elements from iterable objects, 
-        #filter_by is for ORM, SQLAlchemy. filters database based on attribute-value pairs 
+        id_prod = Production.query.filter_by(id = id).one_or_none()
+        #filter: filters
+        #filter_by: filters ORM sqlAlchemy db
 
-        if id_prod: 
+        #if there's matching instance obj, delete it
+        if id_prod:
             db.session.delete(id_prod)
             db.session.commit()
 
-            return make_response({"message": "deleted"}, 204)
+            return make_response({}, 204)
         
-        return make_response({"error": "Production Not Found"}, 404)
-
+        #if not handle error message
+        return make_response({"error": "Production Not Found---- !!! "}, 404)
+    
 api.add_resource(ProductionsById, "/productions/<int:id>")
+
+
+@app.route('/productions/actors/<int:id>')
+def production_actors_by_id(id):
+    production = Production.query.filter(Production.id == id).first()
+    prod_actors = []
+    prod_actors.append(production.title) #easy access to production
+
+    #loop to get the actor info via role
+    # for role in production.roles:
+    #     actor = role.actor
+    #     actor_dict = actor.to_dict(rules = ("-roles",))
+    #     prod_actors.append(actor_dict)
+
+    actors = [ actor.to_dict(rules=("-roles",))
+              for actor in production.actors]
+    prod_actors.append(actors)
+
+    return make_response(prod_actors, 200)
+
+
 
 
 if __name__ == '__main__':
