@@ -18,15 +18,15 @@ db.init_app(app) #initialize the application
 #initialize the API
 api = Api(app)
 
-# @app.route('/productions', methods= ["GET", "DELETE"])
-# def One_Production(id):
-#     if(request.method == "GET"):
-
+@app.route('/')
+def home():
+    return f'<h1> Welcome Home Smooth Ternary Operators </h1>'
 
 class Productions(Resource): #should be different from the model 
 
     #GET 
     def get(self):
+        #without serializer
         #create a query
         quer = Production.query.all()
 
@@ -41,10 +41,12 @@ class Productions(Resource): #should be different from the model
                 "budget": each_p.budget
             })
 
-        #return a response, add a status #
-        resp = make_response(jsonify(prods), 200)
 
-        return resp
+        ##### with serializer--.to_dict()
+        # prods = [production.to_dict() for production in Production.query.all()]
+
+        #return a response, add a status #
+        return make_response(prods, 200)
     
     #post
     def post(self):
@@ -77,7 +79,36 @@ class Productions(Resource): #should be different from the model
 api.add_resource(Productions, '/productions')
 
 
-#POST 
+class ProductionsById(Resource):
+    def get(self, id):
+        id_prod = Production.query.filter(Production.id == id).one_or_none()
+
+        #handle error message
+        if id_prod is None:
+            return make_response({'error': 'Production not found'}, 404)
+        #import ipdb; ipdb.set_trace()
+
+        id_prod_dict = {
+            "id": id_prod.id,
+            "title": id_prod.title,
+            "genre": id_prod.genre,
+            "budget": id_prod.budget
+        }
+        
+        return make_response(id_prod_dict, 200)
+    
+    def delete(self, id):
+        id_prod = Production.query.filter_by(id = id).one_or_none()
+
+        if id_prod:
+            db.session.delete(id_prod)
+            db.session.commit()
+
+            return make_response({}, 204)
+        
+        return make_response({"error": "Production Not Found"}, 404)
+
+api.add_resource(ProductionsById, "/productions/<int:id>")
 
 
 if __name__ == '__main__':
