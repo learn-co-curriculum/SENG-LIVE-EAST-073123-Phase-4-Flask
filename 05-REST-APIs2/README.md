@@ -29,3 +29,12 @@ The solution lies in using `Flask-SQLAlchemy serializer`.
  - Accessing Associated Data: Our current response body may not show the associated relationship, but by using a serializer, we can achieve this.
 
  - SerializerMixin adds a `to_dict()` instance method, allowing us to utilize the `to_dict()` method in `app.py` and eliminating the need for repeatedly converting `SQLAlchemy objects` into `JSON objects`.
+
+
+
+## Validation
+Add validations to the `Production` model:
+- must have a `title`
+- must have an budget` between 50 and 200
+Add validations to the `Role` model:
+must have a `Character_name`
