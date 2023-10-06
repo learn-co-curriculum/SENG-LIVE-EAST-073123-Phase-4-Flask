@@ -36,6 +36,20 @@ class Production(db.Model, SerializerMixin):
 
     actors = association_proxy("roles", "actor")
 
+    @validates("title") # decorator for the "title" att
+    def validate_title(self, key, title):
+        if not title or len(title) < 1 :
+            #check if the title is empty or 
+            #a length less than 1 char
+            raise ValueError("Title MUST exist !!!! ")
+        return title 
+    
+    @validates("budget")
+    def validate_budget(self, key, budget):
+        if not 50 <= budget <= 200:
+            raise ValueError("Budget must be 50 to 200")
+        return budget
+
     def __repr__(self):
         return f'<Production {self.id}, {self.title}>'
 
