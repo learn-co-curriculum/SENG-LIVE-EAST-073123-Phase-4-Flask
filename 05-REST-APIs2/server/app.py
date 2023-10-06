@@ -91,6 +91,23 @@ class ProductionsById(Resource):
 
         return make_response(id_prod_dict, 200)
     
+    def patch(self, id):
+        id_prod = Production.query.filter_by(id=id).one_or_none()
+
+        if id_prod:
+            #import ipdb; ipdb.set_trace() 
+            #breakpoint
+            request_json = request.get_json() #get the new JSON object that we are patching from the incoming HTTP request
+
+            for key in request_json: #loop through the keys in the JSON
+                setattr(id_prod, key, request_json[key])# set the attributes with the new values
+
+            db.session.add(id_prod) #add the updated object to the db
+            db.session.commit() #commit the change to the db
+
+            return make_response(id_prod.to_dict(), 200)
+
+        return make_response({"error": "Production Not Found"}, 404)
 
     def delete(self, id):
         #import ipdb; ipdb.set_trace()

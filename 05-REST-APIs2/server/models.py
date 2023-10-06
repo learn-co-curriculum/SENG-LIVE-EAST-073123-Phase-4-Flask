@@ -2,7 +2,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
-
+from sqlalchemy.orm import validates
 
 #configuring a MetaData
 metadata = MetaData(naming_convention={
@@ -32,9 +32,21 @@ class Production(db.Model, SerializerMixin):
 
    # Relationship mapping the production to related roles
     roles = db.relationship('Role', back_populates='production',cascade='all, delete-orphan')
-    #back_populates attribute: bidirectional relationship  
+    #back_populates attribute: bidirectional relationship
 
     actors = association_proxy("roles", "actor")
+
+    @validates("title")
+    def validate_title(self, key, title):
+        if not title or len(title) < 1:
+            raise ValueError("Title MUST exist yo!")
+        return title
+
+    @validates("budget")
+    def validate_budget(self, key, budget):
+        if not 50 <= budget <= 200:
+            raise ValueError("Budget must be 50 to 200")
+        return budget
 
     def __repr__(self):
         return f'<Production {self.id}, {self.title}>'
