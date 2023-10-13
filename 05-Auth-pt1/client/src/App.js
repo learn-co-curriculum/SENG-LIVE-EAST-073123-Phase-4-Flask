@@ -18,8 +18,10 @@ function App() {
   const [user, setUser] = useState(null)
   const history = useHistory()
 
+  console.log("current user in app", user)
+
   useEffect(() => {
-   
+    fetchUser()
     fetchProductions()
   },[])
 
@@ -37,7 +39,7 @@ function App() {
 }
  
   const addProduction = (production) => setProductions(current => [...current,production])
-  const updateProduction = (updated_production) => setProductions(productions => productions.map(production => production.id == updated_production.id? updated_production : production))
+  const updateProduction = (updated_production) => setProductions(productions => productions.map(production => production.id === updated_production.id? updated_production : production))
   const deleteProduction = (deleted_production) => setProductions(productions => productions.filter((production) => production.id !== deleted_production.id) )
   const handleEdit = (production) => {
     setProductionEdit(production)
@@ -47,7 +49,17 @@ function App() {
   const updateUser = (user) => setUser(user)
   // 9.✅ Return a second block of JSX
     // If the user is not in state return JSX and include <GlobalStyle /> <Navigation/> and  <Authentication updateUser={updateUser}/>
-    //9.1 Test out our route! Logout and try to visit other pages. Login and try to visit other pages again. Refresh the page and note that you are still logged in! 
+    //9.1 Test out our route! Logout and try to visit other pages. Login and try to visit other pages again. Refresh the page and note that you are still logged in!
+
+  // if(!user){
+  //   return (
+  //     <>
+  //       <GlobalStyle />
+  //       <Navigation />
+  //       <Authentication updateUser={updateUser} />
+  //     </>
+  //   )
+  // } 
   
   return (
     <>

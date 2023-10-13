@@ -12,7 +12,15 @@ function Navigation({updateUser}) {
   //6.1 On a successful delete clear the user from state (updateUser is passed down from app via props) and redirect back to the authentication route
 // 7.✅ Head back to server/app.py to build a route that will keep our user logged in with sessions
  const handleLogout = () => {
-  
+    fetch('/logout', {
+      method: "DELETE"
+    })
+    .then(resp => {
+      if(resp.ok){
+        updateUser(null)
+        history.push('/authentication')
+      }
+    })
  }
 
     return (

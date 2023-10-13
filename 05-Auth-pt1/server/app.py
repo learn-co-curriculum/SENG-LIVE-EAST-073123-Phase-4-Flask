@@ -4,7 +4,7 @@
     # Cookies vs Sessions
     # How Flask Encrypts Sessions
 
-# Set up:
+# Set up: 
     # cd into server and run the following in the Terminal:
         # export FLASK_APP=app.py
         # export FLASK_RUN_PORT=5000
@@ -44,8 +44,18 @@ db.init_app(app)
 
 api = Api(app)
 
+@app.route('/dark-mode', methods=['GET'])
+def dark_mode():
+    return make_response(jsonify(
+        {
+            "cookies": request.cookies["mode"],
+            "hello": "bye"
+        }
+    ), 200)
+
 class Productions(Resource):
     def get(self):
+        #import ipdb; ipdb.set_trace()
         production_list = [p.to_dict() for p in Production.query.all()]
         response = make_response(
             production_list,
@@ -128,16 +138,29 @@ class ProductionByID(Resource):
         return response
 api.add_resource(ProductionByID, '/productions/<int:id>')
 
-# 1.✅ User
-    # A user model was added to "models.py" along with an Authentication component in client/src/components/Authentication.sj
-    # 1.1 Create a User POST route by creating a class Users that inherits from Resource
-    # 1.2 Add the route '/users' with api.add_resource()
-    # 1.3 Create a POST method
-        # 1.3.1 use .get_json() to convert the request json 
-        # 1.3.2 create a new user with the request data
-        # 1.3.3 add and commit the new user
-        # 1.3.4 Save the new users id to the session hash
-        # 1.3.5 Make a response and send it back to the client
+
+class UsersClass(Resource): #a User class that inherits from Resource
+    def get(self):
+        all_users = [ users.to_dict() for users in User.query.all()]
+
+        return make_response(all_users, 200)
+    
+    def post(self): #define the POST method
+
+        new_user = User( #create a new user with the request data
+            name = request.get_json()['name'], #.get_json() to convert the request json to sql obj
+            email = request.get_json()['email']
+        )
+
+        db.session.add(new_user) #add and commit the new user
+        db.session.commit() ## this .session is different from `cookie/session` we are learning today
+  
+        session['user_id'] = new_user.id #Save the new users id to the session hash's user_id
+
+        return make_response(new_user.to_dict(), 201) #Make a response and send it back to the client
+
+api.add_resource(UsersClass, '/users')
+#Add the route '/users' with api.add_resource()
 
 # 2.✅ Test this route in the client/src/components/Authentication.sj 
 
@@ -163,9 +186,16 @@ api.add_resource(ProductionByID, '/productions/<int:id>')
 
 # 6.✅ Logout 
     # 6.1 Create a class Logout that inherits from Resource 
+class Logout(Resource):
     # 6.2 Create a method called delete
+    def delete(self):
     # 6.3 Clear the user id in session by setting the key to None
+        session['user_id'] = None
     # 6.4 create a 204 no content response to send back to the client
+        response = make_response('', 204)
+        return response
+    
+api.add_resource(Logout, '/logout')
 
 # 7.✅ Navigate to client/src/components/Navigation.js to build the logout button!
 

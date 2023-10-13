@@ -4,44 +4,82 @@ import styled from "styled-components";
 import { useFormik } from "formik"
 import * as yup from "yup"
 
-
 function Authentication({updateUser}) {
   const [signUp, setSignUp] = useState(false)
   const history = useHistory()
 
   const handleClick = () => setSignUp((signUp) => !signUp)
-  // 3.✅ Finish building the authentication form with formik
-    // 3.1 create a formSchema and use yup to make some client side validations
-    // 3.2 Use formik to handle the value, onchange and onsubmit of the form
-    // 3.3 on submit create a POST. 
-      // 3.4 There is a button that toggles the component between login and sign up.
-      // if signUp is true use the path '/users' else use '/login' (we will be writing login soon)
-      // Complete the post and test our '/users' route 
-    // 3.4 On a successful POST add the user to state (updateUser is passed down from app through props) and redirect to the Home page.
-  // 4.✅ return to server/app.py to build the next route
- 
+    //build the authentication form with formik
+
+    const formSchema = yup.object().shape({ 
+      // use yup to make some client side validations
+      name: yup.string().required("Enter a username"),
+      email: yup.string().email()
+    })
+    
+    const formik = useFormik({ 
+      //Formik handles the value, onchange 
+      //and onsubmit events of the form in JSX
+      initialValues:{
+        name: '',
+        email: ''
+      },
+      validationSchema: formSchema,
+    
+      //in formik, on submit to create a POST. 
+      onSubmit:(values) => {
+            fetch(signUp? '/users': '/login', { //toggles btw login/sign up
+              method: "POST", //if signing up-> POST request w 'users' route
+              headers:{
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify(values, null, 2)
+            })
+            .then(resp => resp.json())
+            .then(user => {
+              updateUser(user) //(updateUser is passed down from app through props)
+              history.push('/') //redirect to the Home page.
+              console.log("hello")
+              console.los("current user in auth--", user) //successful POST add the user to state 
+            })
+          },
+      })
+      
+      console.log("sign up? (or login?) ---- ", signUp)
+    //react handle the submit and change by 
+    //controlled form using "FORMIK"
     return (
-        <> 
-        <h2 style={{color:'red'}}> {'Errors Here!!'}</h2>
+      <> 
+        <h2 style={{color:'red'}}> {formik.errors.name}</h2>
         <h2>Please Log in or Sign up!</h2>
         <h2>{signUp?'Already a member?':'Not a member?'}</h2>
         <button onClick={handleClick}>{signUp?'Log In!':'Register now!'}</button>
-        <Form onSubmit={console.log}>
-        <label>
-          Username
-          </label>
-        <input type='text' name='name' value={'value'} onChange={console.log} />
-        {signUp&&(
-          <>
-          <label>
-          Email
-          </label>
-          <input type='text' name='email' value={'value'} onChange={console.log} />
-          </>
-        )}
-        <input type='submit' value={signUp?'Sign Up!':'Log In!'} />
-      </Form>
-        </>
+        <Form onSubmit={formik.handleSubmit}>
+            <label>
+              Username
+            </label>
+            
+            <input type='text' 
+                  name='name' 
+                  value={formik.values.name} 
+                  onChange={formik.handleChange} />
+
+            {signUp&&(
+              <>
+                  <label>
+                    Email
+                  </label>
+                  <input type='text' 
+                        name='email' 
+                        value={formik.values.email} 
+                        onChange={formik.handleChange} />
+              </>
+            )}
+
+            <input type='submit' 
+                   value={signUp?'Sign Up!':'Log In!'} />
+        </Form>
+      </>
     )
 }
 
