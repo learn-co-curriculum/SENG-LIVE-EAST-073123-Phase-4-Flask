@@ -40,7 +40,7 @@ function Authentication({updateUser}) {
               updateUser(user) //(updateUser is passed down from app through props)
               history.push('/') //redirect to the Home page.
               console.log("hello")
-              console.los("current user in auth--", user) //successful POST add the user to state 
+              //successful POST add the user to state 
             })
           },
       })
