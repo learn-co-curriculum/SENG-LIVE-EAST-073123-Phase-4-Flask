@@ -4,10 +4,9 @@ from faker import Faker
 from app import app
 from models import db, Production, CastMember, User
 
-
 fake = Faker()
 
-with app.app_context():   
+with app.app_context():
     Production.query.delete()
     CastMember.query.delete()
 

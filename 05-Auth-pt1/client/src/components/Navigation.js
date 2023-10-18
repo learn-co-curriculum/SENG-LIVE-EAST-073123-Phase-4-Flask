@@ -4,16 +4,26 @@ import styled from 'styled-components'
 import { useHistory } from 'react-router-dom'
 import { GiHamburgerMenu } from 'react-icons/gi'
 
-function Navigation({updateUser}) {
+function Navigation({updateUser, user}) {
  const [menu, setMenu] = useState(false)
  const history = useHistory()
 
- // 6.✅ Build a DELETE fetch request
+  // 6.✅ Build a DELETE fetch request
   //6.1 On a successful delete clear the user from state (updateUser is passed down from app via props) and redirect back to the authentication route
-// 7.✅ Head back to server/app.py to build a route that will keep our user logged in with sessions
+  // 7.✅ Head back to server/app.py to build a route that will keep our user logged in with sessions
+
+
  const handleLogout = () => {
-  
- }
+
+  fetch("/logout", {
+    method: "DELETE"
+  }).then(res => {
+    if(res.ok){ //on a successful delete
+          updateUser(null)//clear the user
+          history.push('/authentication')//redirect to the authentication page
+    }
+    })
+  }
 
     return (
         <Nav> 
@@ -24,11 +34,27 @@ function Navigation({updateUser}) {
              <GiHamburgerMenu size={30}/> 
            </div>:
            <ul>
+
             <li onClick={() => setMenu(!menu)}>x</li>
-            <li><Link to='/productions/new'>New Production</Link></li>
+            {console.log(user)}
+            
+            {
+            user === null
+            || user === undefined 
+            || user.admin === "0" 
+            || user.admin === false? 
+
+            <></>
+            
+            :<li><Link to='/productions/new'>New Production</Link></li>
+            }
+
             <li><Link to='/'> Home</Link></li>
+           
             <li><Link to='/authentication'> Login/Signup</Link></li>
+
             <li onClick={handleLogout}> Logout </li>
+
            </ul>
            }
          </Menu>

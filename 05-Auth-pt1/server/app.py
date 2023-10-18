@@ -37,12 +37,13 @@ app.json.compact = False
 # Set up:
     # generate a secrete key `python -c 'import os; print(os.urandom(16))'`
 
-app.secret_key = 'Secret Key Here!'
+app.secret_key = b'm"\xf6\x801\xfe\x96^\x06\xff\x19/Cf\xcf\xe2'
 
 migrate = Migrate(app, db)
 db.init_app(app)
 
 api = Api(app)
+
 
 class Productions(Resource):
     def get(self):
@@ -129,8 +130,26 @@ class ProductionByID(Resource):
 api.add_resource(ProductionByID, '/productions/<int:id>')
 
 # 1.✅ User
+class Users(Resource): 
     # A user model was added to "models.py" along with an Authentication component in client/src/components/Authentication.sj
+    def get(self):
+        all_users = [ users.to_dict() for users in User.query.all() ]
+        return make_response(all_users, 200)
     # 1.1 Create a User POST route by creating a class Users that inherits from Resource
+    def post(self):
+        new_user = User(
+            name = request.get_json()['name'],
+            email = request.get_json()['email']
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+
+        session['user_id'] = new_user.id #save the new users id to the session hash's user_id
+
+        return make_response(new_user.to_dict(), 200)
+
+api.add_resource(Users, '/users')
     # 1.2 Add the route '/users' with api.add_resource()
     # 1.3 Create a POST method
         # 1.3.1 use .get_json() to convert the request json 
@@ -142,30 +161,63 @@ api.add_resource(ProductionByID, '/productions/<int:id>')
 # 2.✅ Test this route in the client/src/components/Authentication.sj 
 
 # 3.✅ Create a Login route
+class Login(Resource):
     # 3.1 Create a login class that inherits from Resource
     # 3.2 Use api.add_resource to add the '/login' path
     # 3.3 Build out the post method
+    def post(self):
         # 3.3.1 convert the request from json and select the user name sent form the client. 
         # 3.3.2 Use the name to query the user with a .filter
         # 3.3.3 If found set the user_id to the session hash
+        user = User.query.filter_by(name=request.get_json()['name']).first()
+        session['user_id'] = user.id
         # 3.3.4 convert the user to_dict and send a response back to the client 
-    #3.4 Toggle the signup form to login and test the login route
 
+        response = make_response(
+            user.to_dict(),
+            200
+        )
+
+        return response
+
+    #3.4 Toggle the signup form to login and test the login route
+api.add_resource(Login, '/login')
 
 # 4.✅ Create an AuthorizedSession class that inherits from Resource
+class AuthorizedSession(Resource):
     # 4.1 use api.add_resource to add an authorized route
     # 4.2 Create a get method
+    def get(self):
         # 4.2.1 Access the user_id from session with session.get
         # 4.2.2 Use the user id to query the user with a .filter
+        user = User.query.filter_by(id = session.get('user_id')).first()
         # 4.2.3 If the user id is in sessions and found make a response to send to the client. else raise the Unauthorized exception (Note- Unauthorized is being imported from werkzeug.exceptions)
+        if user:
+            response = make_response(
+                user.to_dict(),
+                200
+            )
+            return response
+        
+        else:
+            abort(401, "Unauthorized")
+
+api.add_resource(AuthorizedSession, '/authorized')
 
 # 5.✅ Head back to client/src/App.js to restrict access to our app!
 
 # 6.✅ Logout 
+class Logout(Resource):
+
     # 6.1 Create a class Logout that inherits from Resource 
     # 6.2 Create a method called delete
+    def delete(self):
     # 6.3 Clear the user id in session by setting the key to None
+        session['user_id'] = None
     # 6.4 create a 204 no content response to send back to the client
+        response = make_response('', 204)
+        return response
+api.add_resource(Logout, '/logout') 
 
 # 7.✅ Navigate to client/src/components/Navigation.js to build the logout button!
 
