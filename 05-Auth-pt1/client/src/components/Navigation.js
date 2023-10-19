@@ -14,15 +14,16 @@ function Navigation({updateUser, user}) {
 
 
  const handleLogout = () => {
-
-  fetch("/logout", {
-    method: "DELETE"
-  }).then(res => {
-    if(res.ok){ //on a successful delete
-          updateUser(null)//clear the user
-          history.push('/authentication')//redirect to the authentication page
-    }
+    fetch('/logout', {
+      method: "DELETE"
     })
+      .then(resp => {
+        if(resp.ok){
+          updateUser(null) //clear the user form the state
+          history.push('/authentication')//redirect back to the auth
+        }
+      })
+
   }
 
     return (
@@ -34,19 +35,14 @@ function Navigation({updateUser, user}) {
              <GiHamburgerMenu size={30}/> 
            </div>:
            <ul>
-
             <li onClick={() => setMenu(!menu)}>x</li>
             {console.log(user)}
-            
-            {
-            user === null
-            || user === undefined 
-            || user.admin === "0" 
-            || user.admin === false? 
-
-            <></>
-            
-            :<li><Link to='/productions/new'>New Production</Link></li>
+            { user === null ||
+              user === undefined ||
+              user.admin === "0"
+              ||user.admin === false?
+            <></>:
+              <li><Link to='/productions/new'>New Production</Link></li>
             }
 
             <li><Link to='/'> Home</Link></li>

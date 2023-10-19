@@ -20,8 +20,8 @@ function App() {
 
 
   useEffect(() => {
-    fetchUser()
     fetchProductions()
+    fetchUser()
   },[])
 
   const fetchProductions = () => (
@@ -37,17 +37,18 @@ function App() {
       fetch('/authorized')
         .then(res => {
           if(res.ok){
-            res.json().then(user => {
+            res.json()
+            .then(user =>{
               setUser(user)
-              console.log("----authorized user from server session")
+              console.log("----au user from server resp----")
               console.log(user)
             })
           }else{
             setUser(null)
           }
         })
-   
-}
+    
+  }
  
   const addProduction = (production) => setProductions(current => [...current,production])
   const updateProduction = (updated_production) => setProductions(productions => productions.map(production => production.id === updated_production.id? updated_production : production))
@@ -61,26 +62,30 @@ function App() {
   // 9.✅ Return a second block of JSX
     // If the user is not in state return JSX and include <GlobalStyle /> <Navigation/> and  <Authentication updateUser={updateUser}/>
     //9.1 Test out our route! Logout and try to visit other pages. Login and try to visit other pages again. Refresh the page and note that you are still logged in! 
-    if(!user){
-      return (
-        <>
-          <GlobalStyle />
-          <Navigation />
-          <Authentication updateUser={updateUser} />
-        </>
-      )
-    }
+  
+  if(!user){ // if the user is not logged in yet
+    return (
+      <>
+        <GlobalStyle />
+        <Navigation/>
+        <Authentication updateUser={updateUser}/>
+      </>
+    )
+  }
 
 
   return (
     <>
     <GlobalStyle />
-    <Navigation updateUser={updateUser}  handleEdit={handleEdit} user={user}/>
+    <Navigation 
+        updateUser={updateUser}  
+        handleEdit={handleEdit} 
+        user={user}/>
       <Switch>
         <Route path='/productions/new'>
           <ProductionForm 
               addProduction={addProduction}
-              user={user}
+              user ={user}
               />
         </Route>
         <Route  path='/productions/edit/:id'>

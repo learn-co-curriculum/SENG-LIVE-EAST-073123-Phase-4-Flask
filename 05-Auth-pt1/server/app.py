@@ -37,13 +37,12 @@ app.json.compact = False
 # Set up:
     # generate a secrete key `python -c 'import os; print(os.urandom(16))'`
 
-app.secret_key = b'm"\xf6\x801\xfe\x96^\x06\xff\x19/Cf\xcf\xe2'
+app.secret_key = b'\xb7\xdd\x9d\xc6@\x0f09\x80\xa8\x8f\x14\xc9bB\x88'
 
 migrate = Migrate(app, db)
 db.init_app(app)
 
 api = Api(app)
-
 
 class Productions(Resource):
     def get(self):
@@ -167,21 +166,24 @@ class Login(Resource):
     # 3.3 Build out the post method
     def post(self):
         # 3.3.1 convert the request from json and select the user name sent form the client. 
-        # 3.3.2 Use the name to query the user with a .filter
-        # 3.3.3 If found set the user_id to the session hash
-        user = User.query.filter_by(name=request.get_json()['name']).first()
-        session['user_id'] = user.id
-        # 3.3.4 convert the user to_dict and send a response back to the client 
 
+        # 3.3.2 Use the name to query the user with a .filter
+        user = User.query.filter_by(name=request.get_json()['name']).first()
+        # 3.3.3 If found set the user_id to the session hash
+        session['user_id'] = user.id
+
+        # 3.3.4 convert the user to_dict and send a response back to the client 
         response = make_response(
             user.to_dict(),
             200
         )
-
         return response
+api.add_resource(Login, '/login')
+
+
 
     #3.4 Toggle the signup form to login and test the login route
-api.add_resource(Login, '/login')
+
 
 # 4.✅ Create an AuthorizedSession class that inherits from Resource
 class AuthorizedSession(Resource):
@@ -190,7 +192,7 @@ class AuthorizedSession(Resource):
     def get(self):
         # 4.2.1 Access the user_id from session with session.get
         # 4.2.2 Use the user id to query the user with a .filter
-        user = User.query.filter_by(id = session.get('user_id')).first()
+        user = User.query.filter_by(id=session.get('user_id')).first()
         # 4.2.3 If the user id is in sessions and found make a response to send to the client. else raise the Unauthorized exception (Note- Unauthorized is being imported from werkzeug.exceptions)
         if user:
             response = make_response(
@@ -198,7 +200,6 @@ class AuthorizedSession(Resource):
                 200
             )
             return response
-        
         else:
             abort(401, "Unauthorized")
 
@@ -215,9 +216,10 @@ class Logout(Resource):
     # 6.3 Clear the user id in session by setting the key to None
         session['user_id'] = None
     # 6.4 create a 204 no content response to send back to the client
-        response = make_response('', 204)
+        response = make_response("", 204)
         return response
-api.add_resource(Logout, '/logout') 
+
+api.add_resource(Logout, '/logout')
 
 # 7.✅ Navigate to client/src/components/Navigation.js to build the logout button!
 
