@@ -55,8 +55,9 @@
   * ![postgreSQL Command](assets/local_psql.png)
 
 ### Connect your app to your Render DB
-  6. In the .evn file add an environment variable `SQLALCHEMY_DATABASE_URI`
-  * 6.1 Return to your render DB In the top right, select the connect dropdown. Select the External Connection Tab and copy the url.
+  6. In the .env file add an environment variable `SQLALCHEMY_DATABASE_URI`
+  * 6.0 If it doesn’t exist, create a .env file in the root directory of your app.
+  * 6.1 Return to your render DB In the top right, select the connect dropdown. Select the External Connection Tab and copy the url. Modify the section of the protocol which reads `postgres://` to `postgresql://`
   * 6.2 Set the environment variable to the connection url 
   * Note: If you have a secret key for sessions, 3rd party api keys or any other secure variables now would be a great time to add them to the .env
 
