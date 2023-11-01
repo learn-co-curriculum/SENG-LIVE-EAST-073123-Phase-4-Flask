@@ -121,9 +121,11 @@
   12. ✅ From the render Dashboard, select 'New' and 'Web Service' from the dropdown menu
   * 12.1 Connect your repository 
   * 12.2 Name your Web Service and change the start command to `gunicorn --chdir server app:app`
+  * 12.3 Change your "Build Command" to `pip install -r requirements.txt && npm install --prefix client && CI=false npm run build --prefix client`
   * ![new_web_service](assets/webservice.png)
-  * 12.3. Click advanced and Add 2 Environment Variables 
+  * 12.4. Click advanced and Add 2 Environment Variables 
      *  PYTHON_VERSION : <your python version>
      *  DATABASE_URI: <your render internal db url. However, replace postgres with postgresql>
+     *  SECRET_KEY: <your secret key> or hit `generate` to let Render create a new one
   * Hit create and get a snack
-  * Once deployed, the deployment url will be at the top Right of the the Web Service page. go to `<your url>/productions` to test your backend deployment. 
+  * Once deployed, the deployment url will be at the top Left of the the Web Service page. go to `<your url>/productions` to test your backend deployment. 
