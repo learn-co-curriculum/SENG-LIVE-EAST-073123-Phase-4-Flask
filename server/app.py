@@ -13,7 +13,15 @@
 # `honcho start -f Procfile.dev`
 
 from config import api, app, db
-from flask import Flask, abort, jsonify, make_response, request, session
+from flask import (
+    Flask,
+    abort,
+    jsonify,
+    make_response,
+    render_template,
+    request,
+    session,
+)
 
 # from flask_cors import CORS
 from flask_restful import Resource
@@ -34,6 +42,12 @@ from werkzeug.exceptions import NotFound, Unauthorized
 #     # if the user is in session OR the request endpoint is open-access, the request will be processed as usual
 #     if request.endpoint not in open_access_list and not session.get("user_id"):
 #         raise Unauthorized
+
+
+@app.route("/")
+@app.route("/<int:id>")
+def index(id=0):
+    return render_template("index.html")
 
 
 class Productions(Resource):
